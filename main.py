@@ -12,6 +12,8 @@ from fastapi.responses import StreamingResponse
 from fastapi.responses import FileResponse
 import io
 
+
+print("init")
 #build 
 # uvicorn main:app
 
