@@ -1,15 +1,16 @@
 from datetime import datetime
 
 from pydantic import BaseModel
-
+from uuid import UUID 
 
 class JwtTokenData(BaseModel):
     exp: datetime
     token_type: str
+    uuid : str
 
     @staticmethod
-    def from_args(exp: datetime, token_type: str,):
-        return JwtTokenData(exp=exp, token_type=token_type)
+    def from_args(uuid : str,exp: datetime, token_type: str,):
+        return JwtTokenData(uuid=uuid,exp=exp, token_type=token_type)
 
 
 class TokenData(BaseModel):

@@ -1,2 +1,9 @@
-GET http://127.0.0.1:8000/test/get
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjM3OTM1NzQsInRva2VuX3R5cGUiOiJ1bm5rbyJ9.bACYoMoNGJ-PifXs8E2A56tC90PeWKKbq840nvfl2-4
+POST http://127.0.0.1:8000/upload/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjM3OTc4NTUsInRva2VuX3R5cGUiOiJ1bm5rbyIsInV1aWQiOiIzNDJlNDg2NS1lMmNjLTRmYzMtYjk4OS0yNGE0NjNkNmFiOGEifQ.e6-SmHevGsxruwJKvXDhd_xTXA4RXRlwKiuErXNHiww
+Content-Type: multipart/form-data; boundary=----WebKitFormBoundary
+
+----WebKitFormBoundary
+# Content-Type: image/jpeg
+
+< C:\Users\shous\OneDrive\画像\pic\02.jpg
+----WebKitFormBoundary--

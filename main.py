@@ -14,6 +14,7 @@ import io
 from datetime import timedelta, datetime, timezone
 from app.data import JwtTokenData
 from app.tokens import *
+from datetime import datetime
  
 
 print("init")
@@ -64,12 +65,14 @@ templates = Jinja2Templates(directory="templates")
 async def upload_image(file: UploadFile = File(...), token : JwtTokenData | None = Depends(get_token_or_none)):
     print(token)
     file_content = await file.read()
-    generated_uuid = str(uuid.uuid4())
-
+    dt_now = datetime.now()
+    
     image_data = {
-        "uuid": generated_uuid,
+        "uuid": token.uuid,
         "original_filename": file.filename,
-        "file_data": Binary(file_content)
+        "file_data": Binary(file_content),
+        "upload_date" : dt_now,
+        "state" : "temp"
     }
     try:
         collection.insert_one(image_data)
@@ -100,3 +103,5 @@ async def test_token():
 @app.get("/test/get")
 async def test_get(token : JwtTokenData | None = Depends(get_token)):
     return "test_get"
+
+

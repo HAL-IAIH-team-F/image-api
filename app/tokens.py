@@ -4,7 +4,7 @@ from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from sqlalchemy.ext.asyncio import AsyncSession
-
+import uuid
 from app.env import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, REFRESH_TOKEN_EXPIRE_MINUTES
 from app import data
 from app.data import TokenData, TokensRes
@@ -15,16 +15,17 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/refresh", auto_error=False)
 
 def create_token(token_type: str = "access", expires_delta: timedelta | None = None):
     expire = datetime.now(timezone.utc) + expires_delta
+    generated_uuid = str(uuid.uuid4())
     encoded_jwt = jwt.encode(
-        data.JwtTokenData.from_args(exp=expire,token_type=token_type).model_dump(),
+        data.JwtTokenData.from_args(uuid=generated_uuid,exp=expire,token_type=token_type).model_dump(),
         SECRET_KEY,
         algorithm=ALGORITHM
     )
     return TokenData.from_args(encoded_jwt, expire)
 
 
-def create_refresh_token(user_id: int):
-    return create_token(user_id, "refresh", expires_delta=timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES))
+def create_upload_token():
+    return create_token("Upload", expires_delta=timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES))
 
 
 def create_access_token(user_id: int):
