@@ -1,0 +1,2 @@
+GET http://127.0.0.1:8000/test/get
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MjM3OTM1NzQsInRva2VuX3R5cGUiOiJ1bm5rbyJ9.bACYoMoNGJ-PifXs8E2A56tC90PeWKKbq840nvfl2-4

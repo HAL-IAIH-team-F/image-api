@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile,Depends
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from fastapi.requests import Request
@@ -11,7 +11,10 @@ from fastapi import FastAPI, HTTPException
 from fastapi.responses import StreamingResponse
 from fastapi.responses import FileResponse
 import io
-
+from datetime import timedelta, datetime, timezone
+from app.data import JwtTokenData
+from app.tokens import *
+ 
 
 print("init")
 #build 
@@ -51,13 +54,15 @@ async def main(request: Request):
             "uuid": uuid
         })
 
-    return templates.TemplateResponse("index.html", {"request": request, "images": image_list})
+    return templates.TemplateResponse("app//index.html", {"request": request, "images": image_list})
 
 
 templates = Jinja2Templates(directory="templates")
 
+
 @app.post("/upload/")
-async def upload_image(file: UploadFile = File(...)):
+async def upload_image(file: UploadFile = File(...), token : JwtTokenData | None = Depends(get_token_or_none)):
+    print(token)
     file_content = await file.read()
     generated_uuid = str(uuid.uuid4())
 
@@ -88,3 +93,10 @@ async def get_image(image_uuid: str):
 
     return StreamingResponse(file_stream, media_type=media_type)
 
+@app.get("/test/token")
+async def test_token():
+    return create_token(token_type="unnko",expires_delta=timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES))
+
+@app.get("/test/get")
+async def test_get(token : JwtTokenData | None = Depends(get_token)):
+    return "test_get"
