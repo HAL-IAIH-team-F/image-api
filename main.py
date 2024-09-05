@@ -27,6 +27,8 @@ app = FastAPI()
 client = MongoClient("mongodb://localhost:27017/")
 db = client["image_database"]
 collection = db["images"]
+templates = Jinja2Templates(directory="templates")
+
 @app.get("/")
 async def index():
     content = """
@@ -58,7 +60,6 @@ async def main(request: Request):
     return templates.TemplateResponse("app//index.html", {"request": request, "images": image_list})
 
 
-templates = Jinja2Templates(directory="templates")
 
 
 @app.post("/upload/")
