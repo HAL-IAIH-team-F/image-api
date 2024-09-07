@@ -30,39 +30,6 @@ db = client["image_database"]
 collection = db["images"]
 templates = Jinja2Templates(directory="templates")
 
-@app.get("/")
-async def index():
-    content = """
-    <body>
-    <h1>Image Upload API</h1>
-    <button class="Index" type="button" onclick="window.location.href='/'">index</button>
-    <button class="Docs" type="button" onclick="window.location.href='/docs'">Docs</button>
-    <button class="Main" type="button" onclick="window.location.href='/main'">Main</button>
-    </body>
-    """
-    return HTMLResponse(content=content)
-    
-
-@app.get("/main")
-async def main(request: Request):
-    images = collection.find()
-    image_list = []
-    for image in images:
-        encoded_image = base64.b64encode(image['file_data']).decode('utf-8')
-        file_extension = image['original_filename'].split('.')[-1]
-        uuid = image['uuid'].split('.')[-1]
-        image_list.append({
-            "data": encoded_image,
-            "extension": file_extension,
-            "filename": image['original_filename'],
-            "uuid": uuid
-        })
-
-    return templates.TemplateResponse("app//index.html", {"request": request, "images": image_list})
-
-
-
-
 @app.post("/upload/")
 async def upload_image(file: UploadFile = File(...), token : JwtTokenData | None = Depends(get_token_or_none)):
     print(token)
@@ -83,11 +50,11 @@ async def upload_image(file: UploadFile = File(...), token : JwtTokenData | None
             except errors.PyMongoError as e:
                 return {"status": [str(e)]}
 
-            return {"status":"OK"}
+            return {"status":"OK","image_uuid": token.uuid}
         else:
-            return {"status":"error TOKEN type"}
+            return {"status":"Error token type"}
     except:
-        return {"status":"error TOKEN none"}
+        return {"status":"Error token none"}
     
 @app.put("/image_preference/{image_uuid}")
 async def post_image(image_uuid: str, state: str = Form(...)):  # Formを使ってstateを受け取る
@@ -137,13 +104,5 @@ def _stream_image(image_data):
     file_stream = io.BytesIO(file_data)
     media_type = f"image/{file_extension}"
     return StreamingResponse(file_stream, media_type=media_type)
-
-@app.get("/test/token")
-async def test_token():
-    return create_token(token_type="Upload",expires_delta=timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES))
-
-@app.get("/test/get")
-async def test_get(token : JwtTokenData | None = Depends(get_token)):
-    return "test_get"
 
 

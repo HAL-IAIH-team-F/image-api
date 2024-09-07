@@ -13,7 +13,7 @@ from app.env import SECRET_KEY
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/refresh", auto_error=False)
 
 
-def create_token(token_type: str = "access", expires_delta: timedelta | None = None):
+def create_token(token_type: str = "Access", expires_delta: timedelta | None = None):
     expire = datetime.now(timezone.utc) + expires_delta
     generated_uuid = str(uuid.uuid4())
     encoded_jwt = jwt.encode(
@@ -29,7 +29,7 @@ def create_upload_token():
 
 
 def create_access_token(user_id: int):
-    return create_token(user_id, "access", timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    return create_token(user_id, "Access", timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
 
 
 def get_token_or_none(token: str | None = Depends(oauth2_scheme)):
@@ -47,6 +47,6 @@ def get_token(token: data.JwtTokenData | None = Depends(get_token_or_none)):
 def access_token_or_none(token: data.JwtTokenData | None = Depends(get_token_or_none)):
     if token is None:
         return None
-    if token.token_type != "access":
+    if token.token_type != "Access":
         raise Exception
     return token
