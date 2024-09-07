@@ -1,0 +1,34 @@
+[project]
+name = "image-api"
+version = "0.1.0"
+description = "Add your description here"
+authors = [
+    { name = "kigawa01", email = "contact@kigawa.net" }
+]
+dependencies = [
+    "fastapi>=0.112.4",
+    "pymongo>=4.8.0",
+    "python-jose>=3.3.0",
+    "sqlalchemy>=2.0.34",
+    "python-dotenv>=1.0.1",
+    "jinja2>=3.1.4",
+    "python-multipart>=0.0.9",
+]
+readme = "README.md"
+requires-python = ">= 3.8"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed = true
+dev-dependencies = [
+    "uvicorn>=0.30.6",
+]
+
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]
