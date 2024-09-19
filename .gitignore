@@ -8,4 +8,4 @@ wheels/
 
 # venv
 .venv
-/.env.local
+/app/.env.local

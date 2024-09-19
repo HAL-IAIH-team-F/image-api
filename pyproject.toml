@@ -26,6 +26,7 @@ managed = true
 dev-dependencies = [
     "uvicorn>=0.30.6",
 ]
+virtual = true
 
 [tool.hatch.metadata]
 allow-direct-references = true
