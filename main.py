@@ -1,22 +1,15 @@
-from fastapi import FastAPI, File, UploadFile,Depends, Form, Query
-from fastapi.responses import HTMLResponse
-from fastapi.templating import Jinja2Templates
-from fastapi.requests import Request
-from pymongo import MongoClient, errors
-from bson import Binary
-import uuid
-import base64
-import os
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import StreamingResponse
-from fastapi.responses import FileResponse
 import io
-from datetime import timedelta, datetime, timezone
-from app.data import JwtTokenData
-from app.tokens import *
-from datetime import datetime
 from typing import Union
 
+from bson import Binary
+from fastapi import FastAPI, HTTPException
+from fastapi import File, UploadFile, Form, Query
+from fastapi.responses import StreamingResponse
+from fastapi.templating import Jinja2Templates
+from pymongo import MongoClient, errors
+
+from app.data import JwtTokenData
+from app.tokens import *
 
 print("init")
 #build 

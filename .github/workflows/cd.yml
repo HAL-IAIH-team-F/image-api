@@ -1,0 +1,67 @@
+name: cd
+
+on:
+  push:
+    branches:
+      - "develop"
+
+jobs:
+  cd:
+
+    strategy:
+      matrix:
+        conf:
+          - name: image-api
+            dockerFile: Dockerfile
+            manifestFile: ./hew-dev/image/image.yml
+            repository: HAL-IAIH-team-F/k8s-hew
+    runs-on: ubuntu-latest
+    env:
+      harborUser: robot$hew
+
+    steps:
+      # checkout
+      - uses: actions/checkout@v4
+
+      - name: preBuild
+        if: ${{ matrix.conf.preDockerBuildCmd }}
+        run: ${{ matrix.conf.preDockerBuildCmd }}
+
+      # docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: harbor.kigawa.net
+          username: ${{ env.harborUser }}
+          password: ${{ secrets.HARBOR_PASS }}
+
+      - name: BuildAndPushImageOnHarbor
+        run: |
+          ${{ matrix.conf.preDockerBuildCmd }}
+          docker build -t harbor.kigawa.net/private/${{ matrix.conf.name }}:${{ github.ref_name }}-${{ github.sha }} \
+           -f ${{ matrix.conf.dockerFile }} \
+          ${{ matrix.conf.dockerOpt }} \
+          ./ 
+          docker push harbor.kigawa.net/private/${{ matrix.conf.name }}:${{ github.ref_name }}-${{ github.sha }}
+
+      # argo
+      - name: checkout manifest repository
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ matrix.conf.repository }}
+          ref: main
+          token: ${{ secrets.GIT_TOKEN }}
+
+      - name: Update YAML File
+        run: |
+          yq -i '.spec.template.spec.containers[0].image = "harbor.kigawa.net/private/${{ matrix.conf.name }}:${{ github.ref_name }}-${{ github.sha }}"' \
+          ${{ matrix.conf.manifestFile }}
+
+      - name: push
+        run: |
+          git config user.name githubActions
+          git config user.email bot@kigawa.net
+          git add .
+          git commit --author=. -m "update rev"
+          git push
