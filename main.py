@@ -57,7 +57,7 @@ async def upload_image(file: UploadFile = File(...), token : JwtTokenData | None
         return {"status":"Error token none"}
     
 @app.put("/image_preference/{image_uuid}")
-async def post_image(image_uuid: str, state: str = Form(...)):  # Formを使ってstateを受け取る
+async def post_image(image_uuid: str, state: str = Form(...)):
     try:
         image_data = collection.find_one({"uuid": image_uuid})
         
