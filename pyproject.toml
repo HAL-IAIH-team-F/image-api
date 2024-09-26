@@ -13,6 +13,7 @@ dependencies = [
     "python-dotenv>=1.0.1",
     "jinja2>=3.1.4",
     "python-multipart>=0.0.9",
+    "uvicorn>=0.30.6",
 ]
 readme = "README.md"
 requires-python = ">= 3.8"
@@ -24,7 +25,6 @@ build-backend = "hatchling.build"
 [tool.rye]
 managed = true
 dev-dependencies = [
-    "uvicorn>=0.30.6",
 ]
 virtual = true
 
