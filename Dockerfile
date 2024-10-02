@@ -8,4 +8,4 @@ COPY ./app ./
 
 ENTRYPOINT ["bash", "-c"]
 # alembic upgrade head &&
-CMD ["uvicorn hew_back:app --host 0.0.0.0 --port 80"]
+CMD ["uvicorn main:app --host 0.0.0.0 --port 80"]
