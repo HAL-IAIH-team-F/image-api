@@ -8,8 +8,8 @@ from fastapi.responses import StreamingResponse
 from fastapi.templating import Jinja2Templates
 from pymongo import MongoClient, errors
 
-from app.data import JwtTokenData
-from app.tokens import *
+from data import JwtTokenData
+from tokens import *
 
 print("init")
 #build 
