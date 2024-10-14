@@ -31,7 +31,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 # MongoDB Client
-client = MongoClient("mongodb://localhost:27017/")
+client = MongoClient(f"mongodb://{ENV.db_user}:{ENV.db_pass}@localhost:27017/")
 db = client["image_database"]
 collection = db["images"]
 templates = Jinja2Templates(directory="templates")
@@ -40,7 +40,7 @@ templates = Jinja2Templates(directory="templates")
 @app.post("/upload/")
 async def upload_image(
         file: UploadFile = File(...),
-        token: JwtTokenData | None = Depends(get_token_or_none)
+        token: JwtTokenData | None = Depends(get_token)
 ) -> reses.TokenRes:
     if token.token_type != "Upload":
         raise err.ErrorIds.INVALID_TOKEN.to_exception(f"invalid token type: {token.token_type}")
@@ -48,7 +48,7 @@ async def upload_image(
     dt_now = datetime.now()
 
     image_data = {
-        "uuid": token.uuid,
+        "uuid": token.uuid.__str__(),
         "original_filename": file.filename,
         "file_data": Binary(file_content),
         "upload_date": dt_now,
@@ -68,13 +68,13 @@ async def img_preference(
         image_uuid: uuid.UUID,
         body: bodies.ImgPreferenceBody
 ) -> {}:
-    image_data = collection.find_one({"uuid": body.image})
+    image_data = collection.find_one({"uuid": image_uuid.__str__()})
 
     if image_data is None:
         raise err.ErrorIds.IMAGE_NOT_FOUND.to_exception("image data not found")
     collection.update_one(
-        {"uuid": image_uuid},
-        {"$set": {"state": body.state.__str__()}}
+        {"uuid": image_uuid.__str__()},
+        {"$set": {"state": body.state.value}}
     )
     return {}
 

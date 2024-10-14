@@ -9,6 +9,7 @@ import data
 from data import TokenData
 from env import ALGORITHM, REFRESH_TOKEN_EXPIRE_MINUTES
 from env import SECRET_KEY
+from util.err import ErrorIds
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/refresh", auto_error=False)
 
@@ -36,7 +37,7 @@ def get_token_or_none(token: str | None = Depends(oauth2_scheme)):
 
 def get_token(token: data.JwtTokenData | None = Depends(get_token_or_none)):
     if token is None:
-        raise Exception
+        raise ErrorIds.UNAUTHORIZED_TOKEN.to_exception("token not found")
     return token
 
 

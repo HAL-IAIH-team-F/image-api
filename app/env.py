@@ -10,8 +10,6 @@ dotenv.load_dotenv("./.env.local")
 dotenv.load_dotenv()
 SECRET_KEY = os.getenv("SECRET_KEY")
 db_url = os.getenv("DB_URL")
-db_user = os.getenv("DB_USER")
-db_pass = os.getenv("DB_PASS")
 db_host = os.getenv("DB_HOST")
 db_port = os.getenv("DB_PORT")
 
@@ -20,5 +18,7 @@ db_name = os.getenv("DB_NAME")
 
 class Env:
     cors_list = os.getenv("CORS_LIST")
+    db_user = os.getenv("DB_USER")
+    db_pass = os.getenv("DB_PASS")
 
 ENV = Env()
