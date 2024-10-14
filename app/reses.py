@@ -9,3 +9,11 @@ class TokenRes(BaseModel):
     @staticmethod
     def create(image_uuid: uuid.UUID):
         return TokenRes(image_uuid=image_uuid)
+
+
+class ImgPreferenceRes(BaseModel):
+    filename: str
+
+    @staticmethod
+    def create(filename: str):
+        return ImgPreferenceRes(filename=filename)
