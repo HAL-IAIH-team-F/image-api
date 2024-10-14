@@ -7,15 +7,16 @@ from jose import jwt
 
 import data
 from data import TokenData
-from env import ACCESS_TOKEN_EXPIRE_MINUTES, ALGORITHM, REFRESH_TOKEN_EXPIRE_MINUTES
+from env import ALGORITHM, REFRESH_TOKEN_EXPIRE_MINUTES
 from env import SECRET_KEY
+from util.err import ErrorIds
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="api/refresh", auto_error=False)
 
 
 def create_token(token_type: str = "Access", expires_delta: timedelta | None = None):
     expire = datetime.now(timezone.utc) + expires_delta
-    generated_uuid = str(uuid.uuid4())
+    generated_uuid = uuid.uuid4()
     encoded_jwt = jwt.encode(
         data.JwtTokenData.from_args(uuid=generated_uuid, exp=expire, token_type=token_type).model_dump(),
         SECRET_KEY,
@@ -28,10 +29,6 @@ def create_upload_token():
     return create_token("Upload", expires_delta=timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES))
 
 
-def create_access_token(user_id: int):
-    return create_token(user_id, "Access", timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
-
-
 def get_token_or_none(token: str | None = Depends(oauth2_scheme)):
     if token is None:
         return None
@@ -40,7 +37,7 @@ def get_token_or_none(token: str | None = Depends(oauth2_scheme)):
 
 def get_token(token: data.JwtTokenData | None = Depends(get_token_or_none)):
     if token is None:
-        raise Exception
+        raise ErrorIds.UNAUTHORIZED_TOKEN.to_exception("token not found")
     return token
 
 
