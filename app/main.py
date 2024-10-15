@@ -31,7 +31,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 # MongoDB Client
-client = MongoClient(f"mongodb://{ENV.db_user}:{ENV.db_pass}@localhost:27017/")
+client = MongoClient(f"mongodb://{ENV.db_user}:{ENV.db_pass}@{ENV.db_host}:27017/")
 db = client["image_database"]
 collection = db["images"]
 templates = Jinja2Templates(directory="templates")
