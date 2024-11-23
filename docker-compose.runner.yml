@@ -1,0 +1,75 @@
+services:
+  mongo-runner:
+    image: mongo:4.4
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: 'mongo'
+      MONGO_INITDB_ROOT_PASSWORD: 'mongo'
+    volumes:
+      - type: volume
+        source: pv-mongo-data
+        target: /data/db
+      - type: volume
+        source: pv-mongo-config
+        target: /data/configdb
+    logging:
+      driver: json-file
+      options:
+        max-size: 1m
+        max-file: '3'
+    ports:
+      - target: 27017
+        published: 27017
+  #########################################################
+  svc-runner-init-rsync:
+    image: secoresearch/rsync:ubuntu
+    command:
+      - bash
+      - -c
+      - |
+        set -ue
+        rsync --delete -av /src/app /repo/
+        rsync --delete -av /src/requirements-dev.lock /repo/
+    working_dir: /src
+    volumes:
+      - type: bind
+        source: .
+        target: /src
+      - type: volume
+        source: pv-mongo-config
+        target: /repo
+  #########################################################
+  svc-runner-backend:
+    image: python:3.12-bookworm
+    depends_on:
+      svc-runner-postgres:
+        condition: service_healthy
+      svc-runner-init-rsync:
+        condition: service_completed_successfully
+    links:
+      - svc-runner-postgres:postgres
+    volumes:
+      - type: bind
+        source: ./temp/test/app-data
+        target: /app
+    working_dir: /app
+    environment:
+      DB_USER: 'postgres'
+      DB_PASS: 'postgres'
+      DB_NAME: "hew"
+      DB_HOST: "svc-runner-postgres"
+    command:
+      - bash
+      - -c
+      - |
+        pip install -r requirements-dev.lock
+        python -c "import sys; print(sys.version)"
+        uvicorn main:app
+  #########################################################
+volumes:
+  pv-mongo-data:
+  pv-mongo-config:
+  pv-repo:
+networks:
+  default:
+    name: dev
+    external: true
