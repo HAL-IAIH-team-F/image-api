@@ -5,7 +5,7 @@ from enum import Enum
 from jose import jwt
 from pydantic import BaseModel
 
-from .. import ENV
+from env import ENV
 
 
 class AbcTokenType(str, Enum):
