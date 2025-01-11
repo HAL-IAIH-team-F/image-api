@@ -25,22 +25,25 @@ async def get_image(
     if image_state == 'Public':
         return _stream_image(image_data)
 
-    elif image_state == 'Private':
-        if q is None:
-            raise HTTPException(status_code=400, detail="Token required")
+    if image_state != 'Private':
+        return {"status": "Image not Public", "state": image_state}
+    if q is None:
+        raise HTTPException(status_code=400, detail="Token required")
 
-        token = data.JwtTokenData(**jwt.decode(q, SECRET_KEY, algorithms=[ALGORITHM]))
-        if token.token_type == 'Access':
-            return _stream_image(image_data)
-        else:
-            raise HTTPException(status_code=403, detail="Invalid token type")
+    token = data.JwtTokenData(**jwt.decode(q, SECRET_KEY, algorithms=[ALGORITHM]))
+    if token.file_uuid != image_uuid:
+        raise HTTPException(status_code=403, detail="Invalid token")
+    if token.token_type == 'Access':
+        return _stream_image(image_data)
 
-    return {"status": "Image not Public", "state": image_state}
+    raise HTTPException(status_code=403, detail="Invalid token type")
 
 
-def _stream_image(image_data):
+def _stream_image(image_data: dict):
     file_data = image_data['file_data']
     file_extension = image_data['original_filename'].split('.')[-1]
     file_stream = io.BytesIO(file_data)
-    media_type = f"image/{file_extension}"
-    return StreamingResponse(file_stream, media_type=media_type)
+    content_type = image_data['content_type']
+    if content_type is None:
+        content_type = f"image/{file_extension}"
+    return StreamingResponse(file_stream, media_type=content_type)

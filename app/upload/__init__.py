@@ -32,11 +32,12 @@ async def upload_image(
     dt_now = datetime.now()
 
     image_data = {
-        "uuid": token.uuid.__str__(),
+        "uuid": token.file_uuid.__str__(),
         "original_filename": file.filename,
         "file_data": Binary(file_content),
         "upload_date": dt_now,
-        "state": "Temp"
+        "state": "Temp",
+        "content_type": file.content_type,
     }
     try:
         collection.insert_one(image_data)
@@ -44,4 +45,4 @@ async def upload_image(
         traceback.print_exc()
         raise err.ErrorIds.PY_MONGO_ERROR.to_exception(e.__str__())
 
-    return TokenRes.create(token.uuid)
+    return TokenRes.create(token.file_uuid)

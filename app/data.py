@@ -7,11 +7,11 @@ from pydantic import BaseModel
 class JwtTokenData(BaseModel):
     exp: datetime
     token_type: str
-    uuid: UUID
+    file_uuid: UUID
 
     @staticmethod
     def from_args(uuid: UUID, exp: datetime, token_type: str, ):
-        return JwtTokenData(uuid=uuid, exp=exp, token_type=token_type)
+        return JwtTokenData(file_uuid=uuid, exp=exp, token_type=token_type)
 
 
 class TokenData(BaseModel):
