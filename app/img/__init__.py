@@ -43,7 +43,8 @@ def _stream_image(image_data: dict):
     file_data = image_data['file_data']
     file_extension = image_data['original_filename'].split('.')[-1]
     file_stream = io.BytesIO(file_data)
-    content_type = image_data['content_type']
-    if content_type is None:
+    if "content_type" in image_data.keys():
+        content_type = image_data['content_type']
+    else:
         content_type = f"image/{file_extension}"
     return StreamingResponse(file_stream, media_type=content_type)
