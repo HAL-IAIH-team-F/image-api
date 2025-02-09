@@ -36,22 +36,15 @@ jobs:
           username: ${{ env.harborUser }}
           password: ${{ secrets.HARBOR_PASS }}
 
-      - name: BuildAndPushImageOnHarbor
-        run: |
-          ${{ matrix.conf.preDockerBuildCmd }}
-          docker build -t harbor.kigawa.net/private/${{ matrix.conf.name }}:${{ github.ref_name }}-${{ github.sha }} \
-           -f ${{ matrix.conf.dockerFile }} \
-          ${{ matrix.conf.dockerOpt }} \
-          ./ 
-          docker push harbor.kigawa.net/private/${{ matrix.conf.name }}:${{ github.ref_name }}-${{ github.sha }}
-
-      # argo
-      - name: checkout manifest repository
-        uses: actions/checkout@v3
+      - uses: docker/build-push-action@v5
         with:
-          repository: ${{ matrix.conf.repository }}
-          ref: main
-          token: ${{ secrets.GIT_TOKEN }}
+          context: ${{ env.dir }}
+          file: ${{ matrix.conf.dockerFile }}
+          push: true
+          tags: harbor.kigawa.net/private/${{ matrix.conf.name }}:${{ github.ref_name }}-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: ${{ env.dockerArg }}
 
       - name: Update YAML File
         run: |
