@@ -4,6 +4,7 @@ from pymongo import MongoClient
 from starlette.middleware.cors import CORSMiddleware
 
 from env import ENV
+from util import fastapiutil
 
 print("init")
 # build
@@ -31,9 +32,10 @@ async def health() -> dict:
     return {"ok": True}
 
 
+fastapiutil.handler(app)
 # noinspection PyUnresolvedReferences
 import upload
 # noinspection PyUnresolvedReferences
 import prefernce
 # noinspection PyUnresolvedReferences
-import img
+import file
