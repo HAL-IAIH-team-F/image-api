@@ -46,6 +46,14 @@ jobs:
           cache-to: type=gha,mode=max
           build-args: ${{ env.dockerArg }}
 
+      # argo
+      - name: checkout manifest repository
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ matrix.conf.repository }}
+          ref: main
+          token: ${{ secrets.GIT_TOKEN }}
+
       - name: Update YAML File
         run: |
           yq -i '.spec.template.spec.containers[0].image = "harbor.kigawa.net/private/${{ matrix.conf.name }}:${{ github.ref_name }}-${{ github.sha }}"' \
