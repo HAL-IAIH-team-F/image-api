@@ -12,7 +12,7 @@ from tokens import *
 @app.get("/img/{image_uuid}/{filename}")
 async def get_image(
         image_uuid: str, filename: str | None = None,
-        q: Union[str, None] = Query(default=None, max_length=50)
+        q: Union[str, None] = Query(default=None, max_length=1024)
 ):
     image_uuid = image_uuid.split(".")[0]
     image_data = collection.find_one({"uuid": image_uuid})
