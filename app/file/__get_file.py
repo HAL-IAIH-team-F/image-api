@@ -50,17 +50,22 @@ class __Service:
 
     def __stream_image(self, image_data: dict):
         file_data = image_data['file_data']
-        file_extension = image_data['original_filename'].split('.')[-1]
+        file_extension: str = image_data['original_filename'].split('.')[-1]
         file_stream = io.BytesIO(file_data)
+        file_name = f"{self.__image_uuid}.{file_extension}"
         if "content_type" in image_data.keys():
             content_type = image_data['content_type']
         else:
             content_type = f"image/{file_extension}"
         headers = dict[str, str]()
+        headers["Cache-Control"] = (
+            "must-revalidate, proxy-revalidate, immutable, stale-while-revalidate, stale-if-error"
+        )
         if self.__download:
-            headers["Content-Disposition"] = f"attachment; filename={image_data['original_filename']}"
+            headers["Content-Disposition"] = f"attachment; filename={file_name}"
+            headers["Cache-Control"] += ", no-transform"
         else:
-            headers["Content-Disposition"] = f"inline; filename={image_data['original_filename']}"
+            headers["Content-Disposition"] = f"inline; filename={file_name}"
         return StreamingResponse(
             file_stream, media_type=content_type, headers=headers
         )

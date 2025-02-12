@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.templating import Jinja2Templates
 from pymongo import MongoClient
 from starlette.middleware.cors import CORSMiddleware
+from starlette.requests import Request
 
 from env import ENV
 from util import fastapiutil
